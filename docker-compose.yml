@@ -1,0 +1,91 @@
+version: "3"
+services:
+
+
+  directus:
+    container_name: directus
+    build:
+      context: "./"
+      dockerfile: Dockerfile
+    ports:
+      - 8055:8055
+    volumes:
+      # By default, uploads are stored in /directus/uploads
+      # Always make sure your volumes matches the storage root when using
+      # local driver
+      - ./uploads:/directus/uploads
+      # snapshots
+      - ./snapshots:/directus/snapshots
+      # - ./directus-sync.config.js:/directus/directus-sync.config.js
+      # Make sure to also mount the volume when using SQLite
+      # - ./database:/directus/database
+      # If you want to load extensions from the host
+      # - ./extensions:/directus/extensions
+    networks:
+      - directus
+    env_file:
+      - .env      
+    # environment:
+    #   KEY: "INSERT_KEY"
+    #   SECRET: "INSERT_SECRET"
+
+  minio:
+      container_name: minio
+      image: minio/minio
+      ports:
+        - "9000:9000"
+      volumes:
+        - ./uploads:/data
+      environment:
+        - MINIO_ACCESS_KEY=${STORAGE_MINIO_KEY}
+        - MINIO_SECRET_KEY=${STORAGE_MINIO_SECRET}
+      command: server /data
+
+  createbuckets:
+      image: minio/mc
+      depends_on:
+        - minio
+      entrypoint: >
+        /bin/sh -c "
+        /usr/bin/mc alias set myminio ${STORAGE_MINIO_ENDPOINT} ${STORAGE_MINIO_KEY} ${STORAGE_MINIO_SECRET};
+        /usr/bin/mc mb myminio/${STORAGE_MINIO_BUCKET};
+        /usr/bin/mc policy set public myminio/${STORAGE_MINIO_BUCKET};
+        exit 0;
+        "
+
+    #   # Whether or not caching is enabled. [false]
+    #   CACHE_ENABLED: false
+    #   # memory | redis
+    #   CACHE_STORE: memory
+    #   ASSETS_CACHE_TTL: "30d"
+
+    #   DB_CLIENT: "pg"
+    #   DB_HOST: "host.docker.internal"
+    #   DB_PORT: "5432"
+    #   DB_DATABASE: "directus_test"
+    #   DB_USER: "retool_admin"
+    #   DB_PASSWORD: "retool_password"
+    #   DB_SSL: "false"
+
+    #   ADMIN_EMAIL: "admin@sharkdg.com"
+    #   ADMIN_PASSWORD: "test"
+
+    #   STORAGE_LOCATIONS: "YANDEX"
+    #   STORAGE_YANDEX_DRIVER: "s3"
+    #   STORAGE_YANDEX_KEY: "gG5Fgl-DiLACa-SOg85c"
+    #   STORAGE_YANDEX_SECRET: "jgdhsQJWRRgDTRhGO5JWuQinGwNsnrDAoidyf5m-"
+    #   STORAGE_YANDEX_ENDPOINT: "https://storage.yandexcloud.net"
+    #   STORAGE_YANDEX_BUCKET: "scarych-test"
+    #   STORAGE_YANDEX_REGION: "ams3"
+
+
+    #   # Make sure to set this in production
+    #   # (see https://docs.directus.io/self-hosted/config-options#general)
+    #   DIRECTUS_URL: "https://d1d6-77-246-101-159.ngrok-free.app"
+    #   PUBLIC_URL: "https://d1d6-77-246-101-159.ngrok-free.app"
+    #   DIRECTUS_ADMIN_EMAIL: "admin@sharkdg.com"
+    #   DIRECTUS_ADMIN_PASSWORD: "test"
+
+networks:
+  directus:
+    driver: bridge
