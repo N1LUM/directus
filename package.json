@@ -1,16 +1,16 @@
 {
-  "name": "directus-docker",
+  "name": "directus-backend-migrator",
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "snapshot-apply": "node snapshot-apply.js",
+    "snapshot-prepare": "node snapshot-prepare.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cross-fetch": "^4.0.0",
     "dotenv": "^16.3.1",
-    "got": "^14.0.0",
-    "node-fetch": "^3.3.2"
+    "cross-fetch": "^4.0.0"
   }
 }
