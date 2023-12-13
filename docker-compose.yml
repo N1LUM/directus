@@ -29,29 +29,29 @@ services:
     #   KEY: "INSERT_KEY"
     #   SECRET: "INSERT_SECRET"
 
-  minio:
-      container_name: minio
-      image: minio/minio
-      ports:
-        - "9000:9000"
-      volumes:
-        - ./uploads:/data
-      environment:
-        - MINIO_ACCESS_KEY=${STORAGE_MINIO_KEY}
-        - MINIO_SECRET_KEY=${STORAGE_MINIO_SECRET}
-      command: server /data
+ # minio:
+ #     container_name: minio
+ #     image: minio/minio
+  #    ports:
+  #      - "9000:9000"
+  #    volumes:
+  #      - ./uploads:/data
+      #environment:
+       # - MINIO_ACCESS_KEY=${STORAGE_MINIO_KEY}
+       # - MINIO_SECRET_KEY=${STORAGE_MINIO_SECRET}
+   #   command: server /data
 
-  createbuckets:
-      image: minio/mc
-      depends_on:
-        - minio
-      entrypoint: >
-        /bin/sh -c "
-        /usr/bin/mc alias set myminio ${STORAGE_MINIO_ENDPOINT} ${STORAGE_MINIO_KEY} ${STORAGE_MINIO_SECRET};
-        /usr/bin/mc mb myminio/${STORAGE_MINIO_BUCKET};
-        /usr/bin/mc policy set public myminio/${STORAGE_MINIO_BUCKET};
-        exit 0;
-        "
+ # createbuckets:
+  #    image: minio/mc
+  #    depends_on:
+  #      - minio
+  #    entrypoint: >
+   #     /bin/sh -c "
+   #     /usr/bin/mc alias set myminio ${STORAGE_MINIO_ENDPOINT} ${STORAGE_MINIO_KEY} ${STORAGE_MINIO_SECRET};
+   #     /usr/bin/mc mb myminio/${STORAGE_MINIO_BUCKET};
+    #    /usr/bin/mc policy set public myminio/${STORAGE_MINIO_BUCKET};
+    #    exit 0;
+    #    "
 
     #   # Whether or not caching is enabled. [false]
     #   CACHE_ENABLED: false

@@ -5,4 +5,3 @@ RUN corepack enable
 USER node
 
 RUN pnpm install directus-extension-editorjs
-

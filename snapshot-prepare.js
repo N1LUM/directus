@@ -7,6 +7,7 @@ const SNAPSHOTS_DIR = "./snapshots";
 
 async function main() {
   const token = await getToken();
+  console.log(token);
   const snapshot = await getSnapshot(token.access_token);
   const lastSnapshotFilename = "snapshot.latest.json";
   const snapshotFile = path.join(SNAPSHOTS_DIR, lastSnapshotFilename);
